@@ -1,12 +1,29 @@
-import ProductCard from "./components/ProductCard";
+"use client";
+
+import ProductCard from "@/components/ProductCard";
+import { Product } from "@/generated/prisma/client";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const request = await fetch("/api/products");
+      const data = await request.json();
+      setProducts(data);
+    }
+    fetchProducts();
+  }, []);
+
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-black py-12">
-      <h1 className="text-3xl font-bold text-center text-zinc-900 dark:text-white mb-8">
-        Nos Produits
-      </h1>
-      <ProductCard />
-    </main>
+    <div>
+      <h1 className="text-3xl font-bold mb-6">Notre Catalogue</h1>
+      <div className="flex flex-wrap gap-6">
+        {products.map((p) => (
+          <ProductCard key={p.id} {...p} />
+        ))}
+      </div>
+    </div>
   );
 }
